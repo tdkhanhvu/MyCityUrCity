@@ -1,0 +1,13 @@
+<div class="comment" style="border: 2px solid {{comment.color}}">
+    <div class="col-md-4">
+        <h4> {{comment.name}}</h4>
+        <h5> {{comment.city}}</h5>
+        <img ng-src="{{comment.flag}}" class="img-thumbnail"/>
+    </div>
+    <div class="col-md-8">
+        <p> We are {{comment.citizenship}} and {{comment.content}}</p>
+        <img ng-src="{{comment.image}}" class="img-thumbnail"/>
+        <button ng-show="ssCtrl.isLogin">Like</button>
+    </div>
+    <div class="clearfix"></div>
+</div>
