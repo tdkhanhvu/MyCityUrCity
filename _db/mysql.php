@@ -69,10 +69,62 @@ class MySQL {
 		return null;
 	}
 
+    private function getCitizenship($country) {
+        switch ($country) {
+            case 'Vietnam':
+                return 'Vietnamese';
+            case 'UK':
+                return 'British';
+            default:
+                return 'UFO';
+        }
+    }
+
+    private function getFlag($country) {
+        switch ($country) {
+            case 'Vietnam':
+                return 'vietnam.png';
+            case 'UK':
+                return 'uk.png';
+            default:
+                return 'UFO.png';
+        }
+    }
+
+    private function getColor($country) {
+        switch ($country) {
+            case 'Vietnam':
+                return 'red';
+            case 'UK':
+                return 'rgb(15, 15, 90)';
+            default:
+                return 'black';
+        }
+    }
+
 	// Select all industries
-	public function selectAllComments() {
-		return $this->selectFromTable('comment');
+	public function selectAllComments($start = 1, $length = 10) {
+		//return $this->selectFromTable('comment');
+
+        $start -= 1;	// For Mysql to start at $start
+        $comments = $this->selectFromTable('comment', null, null, "LIMIT $start, $length");
+        foreach ($comments as &$cmt) {
+            // Category manipulation
+            $user = $this->selectFromTable('user', [['id', $cmt['userId']]]);
+            $cmt['city'] = $user[0]['city'];
+            $cmt['country'] = $user[0]['country'];
+            $cmt['citizenship'] = $this->getCitizenship($cmt['country']);
+            $cmt['flag'] = 'images/flag/'.$this->getFlag($cmt['country']);
+            $cmt['color'] = $this->getColor($cmt['country']);
+            $cmt['userPic'] = 'https://graph.facebook.com/'.$cmt['userId'].'/picture?type=large';
+            $cmt['name'] = $user[0]['name'];
+            $images = $this->selectFromTable('image', [['commentId', $cmt['id']]]);
+            $cmt['image'] = 'images/'.$images[0]['url'];
+        }
+        return $comments;
 	}
+
+
 
 	// Select all companies from a particular industry
 	public function selectAllCompaniesFromIndustry($ind) {
