@@ -73,7 +73,7 @@ class MySQL {
         switch ($country) {
             case 'Vietnam':
                 return 'Vietnamese';
-            case 'UK':
+            case 'United Kingdom':
                 return 'British';
             default:
                 return 'UFO';
@@ -84,8 +84,8 @@ class MySQL {
         switch ($country) {
             case 'Vietnam':
                 return 'images/flag/'.'vietnam.png';
-            case 'UK':
-                return 'images/flag/'.'uk.png';
+            case 'United Kingdom':
+                return 'images/flag/'.'unitedkingdom.png';
             default:
                 return 'images/flag/'.'UFO.png';
         }
@@ -95,7 +95,7 @@ class MySQL {
         switch ($country) {
             case 'Vietnam':
                 return 'red';
-            case 'UK':
+            case 'United Kingdom':
                 return 'rgb(15, 15, 90)';
             default:
                 return 'black';
