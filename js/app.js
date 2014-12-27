@@ -1,7 +1,7 @@
 var app = angular.module('world', ['ngSanitize', 'ui.select']),
     serviceUrl = './_db/WebService.php',
-    userId = -1,
-    userName = '',
+    userId = 10152503138978218,
+    userName = 'Trần Đoàn Khánh Vũ',
     uploaders = [];
 
 (function(){
@@ -483,6 +483,8 @@ function testAPI() {
         userId = response.id;
         userName = response.name;
 
+        $('#profilePic').attr('src','https://graph.facebook.com/' + userId + '/picture?type=large');
+        $('#userName').text(userName);
         //$('#notLogin').hide();
         //$('#login').show();
         $('.command_button').each(function(index, el) {

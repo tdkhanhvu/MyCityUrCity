@@ -23,37 +23,50 @@
 <body ng-controller="CommentController as cmtCtrl" class="container-fluid">
     <div ng-controller="FilterController as filterCtrl">
         <div class="row inputComment">
-            <form name="commentForm" class="col-md-8" ng-submit="commentForm.$valid && cmtCtrl.addComment()" novalidate>
+            <div class="col-md-2">
+                <img id="profilePic" class="img-thumbnail" src="https://graph.facebook.com/10153585547158306/picture?type=large"/>
+                <p id="userName" class="text-center">Nguyễn Quang Phúc</p>
+            </div>
+            <form name="commentForm" class="form-horizontal col-md-6" ng-submit="commentForm.$valid && cmtCtrl.addComment()" novalidate>
                 <div class="form-group">
-    <!--                <select class="form-control" ng-model="cmtCtrl.newComment.country" required>-->
-    <!--                    <option value="1">Vietnam</option>-->
-    <!--                    <option value="2">United Kingdom</option>-->
-    <!--                </select>-->
-                    <select class="form-control" ng-model="cmtCtrl.newComment.country" required
-                            ng-options="item.label for item in cmtCtrl.countries track by item.id">
-                    </select>
-                    <select class="form-control" ng-disabled="!cmtCtrl.newComment.country"
-                            ng-model="cmtCtrl.newComment.city" required
-                            ng-options="city.id for city in cmtCtrl.newComment.country.cities track by city.id">
-
-                    </select>
-                    <textarea class="form-control" ng-model="cmtCtrl.newComment.content" required></textarea>
-                    <div> reviewForm is {{commentForm.$valid}} </div>
-                    <input class="form-control" type="submit" value="Submit"/>
-                    <span class="glyphicon glyphicon-camera photo_upload_icon"></span>
-
-                    <div>
-                        <p>Selected: {{country.selected}}</p>
-                        <ui-select ng-model="country.selected" theme="selectize" ng-disabled="disabled" style="width: 300px;">
-                            <ui-select-match placeholder="Select or search a country in the list...">{{$select.selected.name}}</ui-select-match>
-                            <ui-select-choices repeat="country in countries | filter: $select.search">
-                                <span ng-bind-html="country.name | highlight: $select.search"></span>
-                                <small ng-bind-html="country.code | highlight: $select.search"></small>
-                            </ui-select-choices>
-                        </ui-select>
+                    <label for="country" class="col-sm-2 control-label">Country</label>
+                    <div class="col-sm-10">
+                        <select id="country" class="form-control" ng-model="cmtCtrl.newComment.country" required
+                                ng-options="item.label for item in cmtCtrl.countries track by item.id">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="city" class="col-sm-2 control-label">City</label>
+                    <div class="col-sm-10">
+                        <select id="city" class="form-control" ng-disabled="!cmtCtrl.newComment.country"
+                                ng-model="cmtCtrl.newComment.city" required
+                                ng-options="city.id for city in cmtCtrl.newComment.country.cities track by city.id">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="content" class="col-sm-2 control-label">Content</label>
+                    <div class="col-sm-10">
+                        <input id="content" class="form-control" ng-model="cmtCtrl.newComment.content" required/>
+                        <span class="glyphicon glyphicon-camera photo_upload_icon" style="position:relative; top:-33px;float:right;font-size:35px;height:0;"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-6 col-sm-3">
+                        <button class="form-control btn btn-success" type="submit">Submit</button>
                     </div>
                 </div>
             </form>
+            <div class="col-md-4">
+                <ui-select ng-model="country.selected" theme="selectize" ng-disabled="disabled">
+                    <ui-select-match placeholder="Filter By Country">{{$select.selected.name}}</ui-select-match>
+                    <ui-select-choices repeat="country in countries | filter: $select.search">
+                        <span ng-bind-html="country.name | highlight: $select.search"></span>
+                        <small ng-bind-html="country.code | highlight: $select.search"></small>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
         </div>
 
         <div class="row comments">
