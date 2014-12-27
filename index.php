@@ -24,11 +24,11 @@
     <div ng-controller="FilterController as filterCtrl">
         <div class="row inputComment">
             <div class="col-md-2" ng-controller="SessionController as sessionCtrl">
-                <img id="profilePic" class="img-thumbnail" ng-show="sessionCtrl.isLogin"
-                     src="https://graph.facebook.com/10153585547158306/picture?type=large"/>
-                <p id="userName" class="text-center" ng-show="sessionCtrl.isLogin">Nguyễn Quang Phúc</p>
+                <img id="profilePic" class="img-thumbnail" ng-show="sessionCtrl.isLogin()"
+                     src=""/>
+                <p id="userName" class="text-center" ng-show="sessionCtrl.isLogin()">Nguyễn Quang Phúc</p>
                 <fb:login-button scope="public_profile,email" onlogin="checkLoginState();"
-                                 ng-show="!sessionCtrl.isLogin">
+                                 ng-show="!sessionCtrl.isLogin()">
                 </fb:login-button>
             </div>
             <form name="commentForm" class="form-horizontal col-md-6" ng-submit="commentForm.$valid && cmtCtrl.addComment()" novalidate>

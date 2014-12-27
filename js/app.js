@@ -1,6 +1,6 @@
 var app = angular.module('world', ['ngSanitize', 'ui.select']),
     serviceUrl = './_db/WebService.php',
-    userId = 10152503138978218,
+    userId = -1,
     userName = 'Trần Đoàn Khánh Vũ',
     uploaders = [];
 
@@ -84,9 +84,12 @@ var app = angular.module('world', ['ngSanitize', 'ui.select']),
 
         }
     });
-    app.controller('SessionController', function(){
-        this.isLogin = false;
-    });
+    app.controller('SessionController', ['$scope', function($scope){
+        $scope.userId = userId;
+        this.isLogin = function() {
+            return $scope.userId != -1;
+        };
+    }]);
 
     app.controller('FilterController', function($scope){
         $scope.customFilter = function (item) {
@@ -477,12 +480,23 @@ window.fbAsyncInit = function() {
 // successful.  See statusChangeCallback() for when this call is made.
 function testAPI() {
     console.log('Welcome!  Fetching your information.... ');
+
     FB.api('/me', function(response) {
         console.log(response);
         console.log('Successful login for: ' + response.name);
         userId = response.id;
         userName = response.name;
 
+        var ctrlElement = document.querySelector('[ng-controller="SessionController as sessionCtrl"]');
+        var $scope = angular.element(ctrlElement).scope();
+        $scope.$apply(function() {
+            $scope.userId = userId;
+        });
+
+        console.log($scope);
+        //$scope.$apply(function() {
+        //    $scope.data.age = 20;
+        //});
         $('#profilePic').attr('src','https://graph.facebook.com/' + userId + '/picture?type=large');
         $('#userName').text(userName);
         //$('#notLogin').hide();
