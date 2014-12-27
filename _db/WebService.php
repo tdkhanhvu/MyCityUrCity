@@ -9,12 +9,11 @@
     $mysql = new MySQL();
     $result = array();
     $user_id = null;
-    $start = 1;
-    $limit = 10;
+    $limit = 1;
 
     switch($request) {
         case "GetAllComments":
-            $result = $mysql->selectAllComments();
+            $result = $mysql->selectAllComments($_POST['filter'], $_POST['start'], $limit);
             break;
         case "InsertNewComment":
             $result = $mysql->insertNewComment($_POST['userId'],$_POST['userName']
@@ -23,7 +22,6 @@
         default:
             break;
     }
-
     echo json_encode($result);
 
 ?>

@@ -68,7 +68,8 @@
                 </div>
             </form>
             <div class="col-md-4">
-                <ui-select ng-model="country.selected" theme="selectize" ng-disabled="disabled">
+                <ui-select ng-model="country.selected" theme="selectize" ng-disabled="disabled"
+                           on-select="changeSelect($item, $model)">
                     <ui-select-match placeholder="Filter By Country">{{$select.selected.name}}</ui-select-match>
                     <ui-select-choices repeat="country in countries | filter: $select.search">
                         <span ng-bind-html="country.name | highlight: $select.search"></span>
@@ -79,7 +80,8 @@
         </div>
 
         <div class="row comments">
-            <div ng-repeat="comment in cmtCtrl.comments | filter: customFilter">
+            <div infinite-scroll="cmtCtrl.loadData()" infinite-scroll-distance="3"
+                 ng-repeat="comment in cmtCtrl.comments | filter: customFilter">
                 <comment></comment>
             </div>
         </div>
@@ -88,6 +90,7 @@
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/angular.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular-sanitize.js"></script>
+    <script type="text/javascript" src="js/scroll/ng-infinite-scroll.js"></script>
     <script type="text/javascript" src="js/upload/dropzone.js"></script>
     <script type="text/javascript" src="js/select2/select.js"></script>
     <script type="text/javascript" src="js/app.js"></script>

@@ -1,7 +1,10 @@
-var app = angular.module('world', ['ngSanitize', 'ui.select']),
+var app = angular.module('world', ['ngSanitize', 'ui.select','infinite-scroll']),
     serviceUrl = './_db/WebService.php',
     userId = -1,
     userName = 'Trần Đoàn Khánh Vũ',
+    filter = "all",
+    filterIndex = {},
+    loading = false,
     uploaders = [];
 
 (function(){
@@ -48,7 +51,10 @@ var app = angular.module('world', ['ngSanitize', 'ui.select']),
 
         this.comments = [];
         loadAllComments(this.comments);
-
+        this.loadData = function() {
+            console.log(filter);
+            loadAllComments(this.comments);
+        };
 
 
         this.newComment = {};
@@ -100,6 +106,7 @@ var app = angular.module('world', ['ngSanitize', 'ui.select']),
                 $scope.country.selected.name === 'All' ||
                 $scope.country.selected.name === item.country;
         };
+
 
         $scope.country = {};
         $scope.countries = [
@@ -348,6 +355,10 @@ var app = angular.module('world', ['ngSanitize', 'ui.select']),
             {name: 'Zambia', code: 'ZM'},
             {name: 'Zimbabwe', code: 'ZW'}
         ];
+
+        $scope.changeSelect = function($item, $model) {
+            filter = $item.name;
+        }
     });
 
     app.directive('comment', function(){
@@ -358,28 +369,33 @@ var app = angular.module('world', ['ngSanitize', 'ui.select']),
     });
 })();
 
-angular.element(document).ready(function() {
-//    var controllerElement = document.querySelector('body'),
-//        controllerScope = angular.element(controllerElement).scope();
-//    console.log(app.controller('CommentController'));
-//    loadAllComments(app.controller('CommentController'));
-});
+
 function loadAllComments(comments) {
-    $.ajax({
-        url: serviceUrl,
-        type: "post",
-        data: {'request':'GetAllComments'},
-        dataType: 'json',
-        success: function(result){
-          addMoreStuff(result).forEach(function(comment) {
-              comments.push(comment);
-          });
-          console.log(comments);
-        },
-        error: function(xhr, status, error) {
-            console.log(xhr.responseText);
+    if (!loading) {
+        if(!filterIndex.hasOwnProperty(filter)){
+            filterIndex[filter] = 0;
         }
-    });
+        loading = true;
+        $.ajax({
+            url: serviceUrl,
+            type: "post",
+            data: {'request':'GetAllComments', 'filter': filter, 'start':filterIndex[filter]},
+            dataType: 'json',
+            success: function(result){
+                console.log(result);
+                addMoreStuff(result).forEach(function(comment) {
+                    if (!comments.filter(function (element, index, array) {return element.id == comment.id;}).length) {
+                        comments.push(comment);
+                        filterIndex[filter] += 1;
+                    }
+                });
+                loading = false;
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
 }
 function addMoreStuff(comments) {
     return comments;
