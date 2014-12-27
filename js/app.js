@@ -1,63 +1,68 @@
-var app = angular.module('world', [ ]).service('sharedProperties', function () {
-    var comments = [];
-
-    return {
-        getComments: function () {
-            return comments;
-        },
-        setComments: function(value) {
-            property = comments;
-        }
-    };
-}),
-    serviceUrl = './_db/WebService.php';
+var app = angular.module('world', [ ]),
+    serviceUrl = './_db/WebService.php',
+    userId = -1,
+    userName = '';
 
 (function(){
     app.controller('CommentController', function($scope){
-        console.log('CommentCtrl');
+        this.countries = [{
+            id: 'Vietnam',
+            label: 'Vietnam',
+            cities: [{
+                id: 'Ho Chi Minh'
+            },{
+                id: 'Ha Noi'
+            }]
+        }, {
+            id: 'UK',
+            label: 'UK',
+            cities: [{
+                id: 'London'
+            },{
+                id: 'Cambridge'
+            }]
+        }];
+        this.cities = [];
+
         this.filter = "all";
         this.comments = [];
         loadAllComments(this.comments);
-//        this.comments = allComments;
-//        $http.post(serviceUrl, {'request':'GetAllComments'}).
-//            success(function(data, status, headers, config) {
-//                data.forEach(function(comment) {
-//                    $.extend(comment, {
-//                        name: 'Trần Đoàn Khánh Vũ',
-//                        flag: 'images/flag/vietnam.png',
-//                        color: 'red',
-//                        citizenship: 'Vietnamese',
-//                        image: 'images/caphebet.jpg',
-//                        city: 'Ho Chi Minh',
-//                        id: '5'
-//                    });
-//                    console.log(comment);
-//                    allComments.push(comment);
-//                });
-//            }).
-//            error(function(data, status, headers, config) {
-//                // called asynchronously if an error occurs
-//                // or server returns response with an error status.
-//            });
-//
-//        this.comments = loadAllComments();
+
         this.isShown = function(city){
             return this.filter === "all" || this.filter === city;
         };
 
         this.newComment = {};
-
+        var that = this;
         this.addComment = function() {
-            $.extend(this.newComment, {
-                id:'001',
-                city: 'Đà Nẵng',
-                flag: 'images/flag/vietnam.png',
-                color: 'red',
-                citizenship: 'Vietnamese',
-                image: 'images/caphebet.jpg'
+            this.newComment.country = this.newComment.country['id'];
+            this.newComment.city = this.newComment.city['id'];
+
+            $.ajax({
+                url: serviceUrl,
+                type: "post",
+                data: {'request':'InsertNewComment', 'userId': userId, 'userName': userName,
+                    'country' : this.newComment.country, 'city': this.newComment.city,
+                    'content': this.newComment.content
+                },
+                dataType: 'json',
+                success: function(result){
+                    $.extend(that.newComment, {
+                        id:result.id,
+                        flag: result.flag,
+                        color: result.color,
+                        citizenship: result.citizenship
+                    });
+                    that.comments.push(that.newComment);
+                    that.newComment = {};
+                    $scope.$apply();
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
             });
-            this.comments.push(this.newComment);
-            this.newComment = {};
+
+
         }
     });
     app.controller('SessionController', function(){
@@ -85,39 +90,6 @@ function loadAllComments(comments) {
         data: {'request':'GetAllComments'},
         dataType: 'json',
         success: function(result){
-          //scope.cmtCtrl.comments = addMoreStuff(result);
-//        scope.cmtCtrl.comments = [{
-//        id: '123',
-//        name: 'Trần Đoàn Khánh Vũ',
-//        city: 'Ho Chi Minh',
-//        country: 'Vietnam',
-//        flag: 'images/flag/vietnam.png',
-//        color: 'red',
-//        citizenship: 'Vietnamese',
-//        content: 'we normally drink a lot of coffee',
-//        image: 'images/caphebet.jpg'
-//    },{
-//        id: '234',
-//        name: 'Nguyễn Duy Long',
-//        city: 'Ha Noi',
-//        country: 'Vietnam',
-//        flag: 'images/flag/vietnam.png',
-//        color: 'red',
-//        citizenship: 'Vietnamese',
-//        content: 'we love to enjoy our hot tea in the cold weather',
-//        image: 'images/hanoitra.jpg'
-//    },{
-//        id: '567',
-//        name: 'David Beckham',
-//        city: 'London',
-//        country: 'United Kingdom',
-//        flag: 'images/flag/uk.png',
-//        color: 'rgb(15, 15, 90)',
-//        citizenship: 'British',
-//        content: 'we miss our foggy days, all over the year',
-//        image: 'images/londonfog.jpg'
-//    }];
-            //console.log(scope);
           addMoreStuff(result).forEach(function(comment) {
               comments.push(comment);
           });
@@ -129,12 +101,6 @@ function loadAllComments(comments) {
     });
 }
 function addMoreStuff(comments) {
-//    comments.forEach(function(comment) {
-//        $.extend(comment, {
-//            image: 'images/caphebet.jpg'
-//        });
-//    });
-
     return comments;
 }
 
@@ -156,10 +122,10 @@ function statusChangeCallback(response) {
     } else {
         // The person is not logged into Facebook, so we're not sure if
         // they are logged into this app or not.
-        $('#status').html(getLangValue('Login'));
-        $('#notLogin').show();
-        $('#login').hide();
-        $('.command_button > div:nth-of-type(2)').hide();
+        //$('#status').html(getLangValue('Login'));
+        //$('#notLogin').show();
+        //$('#login').hide();
+        //$('.command_button > div:nth-of-type(2)').hide();
     }
 }
 
@@ -174,7 +140,7 @@ function checkLoginState() {
 
 window.fbAsyncInit = function() {
     FB.init({
-        appId      : '738394009541313',
+        appId      : '738573852891597',
         cookie     : true,  // enable cookies to allow the server to access
         // the session
         xfbml      : true,  // parse social plugins on this page
@@ -217,11 +183,9 @@ function testAPI() {
         console.log('Successful login for: ' + response.name);
         userId = response.id;
         userName = response.name;
-        $('#username').html(userName);
-        $('#userPhoto').attr('src', convertIdIntoFBPhoto(userId));
 
-        $('#notLogin').hide();
-        $('#login').show();
+        //$('#notLogin').hide();
+        //$('#login').show();
         $('.command_button').each(function(index, el) {
             showHideCommandButton(el);
         });

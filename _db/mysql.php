@@ -83,11 +83,11 @@ class MySQL {
     private function getFlag($country) {
         switch ($country) {
             case 'Vietnam':
-                return 'vietnam.png';
+                return 'images/flag/'.'vietnam.png';
             case 'UK':
-                return 'uk.png';
+                return 'images/flag/'.'uk.png';
             default:
-                return 'UFO.png';
+                return 'images/flag/'.'UFO.png';
         }
     }
 
@@ -114,16 +114,50 @@ class MySQL {
             $cmt['city'] = $user[0]['city'];
             $cmt['country'] = $user[0]['country'];
             $cmt['citizenship'] = $this->getCitizenship($cmt['country']);
-            $cmt['flag'] = 'images/flag/'.$this->getFlag($cmt['country']);
+            $cmt['flag'] = $this->getFlag($cmt['country']);
             $cmt['color'] = $this->getColor($cmt['country']);
             $cmt['userPic'] = 'https://graph.facebook.com/'.$cmt['userId'].'/picture?type=large';
             $cmt['name'] = $user[0]['name'];
             $images = $this->selectFromTable('image', [['commentId', $cmt['id']]]);
-            $cmt['image'] = 'images/'.$images[0]['url'];
+            if (sizeof($images) > 0)
+                $cmt['image'] = 'images/'.$images[0]['url'];
         }
         return $comments;
 	}
 
+    public function insertNewComment($userId, $userName, $country, $city, $content) {
+        $user = $this->selectFromTable('user', [['id', $userId]]);
+
+        //user not exists, create
+        if (sizeof($user) == 0)
+            $this->insertIntoTable('user',
+            [
+                ['id', $userId],
+                ['name', $userName],
+                ['country', $country],
+                ['city', $city]
+            ]);
+        else {
+            if ($user[0]['name'] != $userName || $user[0]['city'] != $city
+                    || $user[0]['country'] != $country)
+                $this->updateTable('user', [['name', $userName],['country', $country],
+                    ['city', $city]],[['id', $userId]]);
+        }
+
+        $commentId = $this->insertIntoTable('comment',
+            [
+                ['userId', $userId],
+                ['content', $content]
+            ]);
+
+        $result = array();
+
+        $result['id'] = $commentId;
+        $result['flag'] = $this->getFlag($country);
+        $result['citizenship'] = $this->getCitizenship($country);
+        $result['color'] = $this->getColor($country);
+        return $result;
+    }
 
 
 	// Select all companies from a particular industry

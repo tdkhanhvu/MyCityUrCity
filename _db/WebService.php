@@ -16,6 +16,10 @@
         case "GetAllComments":
             $result = $mysql->selectAllComments();
             break;
+        case "InsertNewComment":
+            $result = $mysql->insertNewComment($_POST['userId'],$_POST['userName']
+                ,$_POST['country'],$_POST['city'],$_POST['content']);
+            break;
         default:
             break;
     }

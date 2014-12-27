@@ -6,7 +6,7 @@
     </div>
     <div class="col-md-8">
         <p> We are {{comment.citizenship}} and {{comment.content}}</p>
-        <img ng-src="{{comment.image}}" class="img-thumbnail"/>
+        <img ng-show="comment.image" ng-src="{{comment.image}}" class="img-thumbnail"/>
         <button ng-show="ssCtrl.isLogin">Like</button>
     </div>
     <div class="clearfix"></div>
