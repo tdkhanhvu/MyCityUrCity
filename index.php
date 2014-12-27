@@ -9,7 +9,7 @@
 ?>
 
 <!DOCTYPE html>
-<html ng-app="world" ng-controller="SessionController as ssCtrl">
+<html ng-app="world" ng-controller="SessionController as sessionCtrl">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -23,10 +23,11 @@
 <body ng-controller="CommentController as cmtCtrl" class="container-fluid">
     <div ng-controller="FilterController as filterCtrl">
         <div class="row inputComment">
-            <div class="col-md-2" ng-controller="SessionController as sessionCtrl">
+            <div class="col-md-2">
                 <img id="profilePic" class="img-thumbnail" ng-show="sessionCtrl.isLogin()"
                      src=""/>
                 <p id="userName" class="text-center" ng-show="sessionCtrl.isLogin()">Nguyễn Quang Phúc</p>
+                <p ng-show="!sessionCtrl.isLogin()">Please login to comment</p>
                 <fb:login-button scope="public_profile,email" onlogin="checkLoginState();"
                                  ng-show="!sessionCtrl.isLogin()">
                 </fb:login-button>
@@ -36,6 +37,7 @@
                     <label for="country" class="col-sm-2 control-label">Country</label>
                     <div class="col-sm-10">
                         <select id="country" class="form-control" ng-model="cmtCtrl.newComment.country" required
+                                ng-disabled="!sessionCtrl.isLogin()"
                                 ng-options="item.label for item in cmtCtrl.countries track by item.id">
                         </select>
                     </div>
@@ -43,8 +45,8 @@
                 <div class="form-group">
                     <label for="city" class="col-sm-2 control-label">City</label>
                     <div class="col-sm-10">
-                        <select id="city" class="form-control" ng-disabled="!cmtCtrl.newComment.country"
-                                ng-model="cmtCtrl.newComment.city" required
+                        <select id="city" class="form-control" ng-disabled="!sessionCtrl.isLogin()
+                                || !cmtCtrl.newComment.country" ng-model="cmtCtrl.newComment.city" required
                                 ng-options="city.id for city in cmtCtrl.newComment.country.cities track by city.id">
                         </select>
                     </div>
@@ -52,13 +54,16 @@
                 <div class="form-group">
                     <label for="content" class="col-sm-2 control-label">Content</label>
                     <div class="col-sm-10">
-                        <input id="content" class="form-control" ng-model="cmtCtrl.newComment.content" required/>
-                        <span class="glyphicon glyphicon-camera photo_upload_icon" style="position:relative; top:-33px;float:right;font-size:35px;height:0;"></span>
+                        <input id="content" class="form-control" ng-disabled="!sessionCtrl.isLogin()"
+                               ng-model="cmtCtrl.newComment.content" required/>
+                        <span class="glyphicon glyphicon-camera photo_upload_icon"
+                              style="position:relative; top:-33px;float:right;font-size:35px;height:0;"></span>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-6 col-sm-3">
-                        <button class="form-control btn btn-success" type="submit">Submit</button>
+                        <button class="form-control btn btn-success" ng-disabled="!sessionCtrl.isLogin()"
+                                type="submit">Submit</button>
                     </div>
                 </div>
             </form>

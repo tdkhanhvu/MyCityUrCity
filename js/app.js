@@ -6,21 +6,23 @@ var app = angular.module('world', ['ngSanitize', 'ui.select']),
 
 (function(){
     $('body').on('click', '.photo_upload_icon', function() {
-        var icon = $(this),
-            form = icon.parent().find('form');
+        if (userId != - 1) {
+            var icon = $(this),
+                form = icon.parent().find('form');
 
-        if (form.length) {
-            form.toggle();
-        }
-        else {
-            var id = 'photoUpload';
-            $('<form action="/file-upload" class="dropzone" id="' + id + '"></form>').insertAfter(icon);
+            if (form.length) {
+                form.toggle();
+            }
+            else {
+                var id = 'photoUpload';
+                $('<form action="/file-upload" class="dropzone" id="' + id + '"></form>').insertAfter(icon);
 
-            Dropzone.autoDiscover = false;
-            uploaders[id] = new Dropzone("#" + id, {
-                url: "upload.php",
-                addRemoveLinks: true
-            });
+                Dropzone.autoDiscover = false;
+                uploaders[id] = new Dropzone("#" + id, {
+                    url: "upload.php",
+                    addRemoveLinks: true
+                });
+            }
         }
     });
 
@@ -34,8 +36,8 @@ var app = angular.module('world', ['ngSanitize', 'ui.select']),
                 id: 'Ha Noi'
             }]
         }, {
-            id: 'UK',
-            label: 'UK',
+            id: 'United Kingdom',
+            label: 'United Kingdom',
             cities: [{
                 id: 'London'
             },{
@@ -66,6 +68,7 @@ var app = angular.module('world', ['ngSanitize', 'ui.select']),
                 dataType: 'json',
                 success: function(result){
                     $.extend(that.newComment, {
+                        name: userName,
                         id:result.id,
                         flag: result.flag,
                         color: result.color,
