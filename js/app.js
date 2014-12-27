@@ -85,7 +85,7 @@ var app = angular.module('world', ['ngSanitize', 'ui.select']),
         }
     });
     app.controller('SessionController', function(){
-        this.isLogin = true;
+        this.isLogin = false;
     });
 
     app.controller('FilterController', function($scope){

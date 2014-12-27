@@ -23,9 +23,13 @@
 <body ng-controller="CommentController as cmtCtrl" class="container-fluid">
     <div ng-controller="FilterController as filterCtrl">
         <div class="row inputComment">
-            <div class="col-md-2">
-                <img id="profilePic" class="img-thumbnail" src="https://graph.facebook.com/10153585547158306/picture?type=large"/>
-                <p id="userName" class="text-center">Nguyễn Quang Phúc</p>
+            <div class="col-md-2" ng-controller="SessionController as sessionCtrl">
+                <img id="profilePic" class="img-thumbnail" ng-show="sessionCtrl.isLogin"
+                     src="https://graph.facebook.com/10153585547158306/picture?type=large"/>
+                <p id="userName" class="text-center" ng-show="sessionCtrl.isLogin">Nguyễn Quang Phúc</p>
+                <fb:login-button scope="public_profile,email" onlogin="checkLoginState();"
+                                 ng-show="!sessionCtrl.isLogin">
+                </fb:login-button>
             </div>
             <form name="commentForm" class="form-horizontal col-md-6" ng-submit="commentForm.$valid && cmtCtrl.addComment()" novalidate>
                 <div class="form-group">
@@ -74,14 +78,6 @@
                 <comment></comment>
             </div>
         </div>
-    </div>
-    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-    </fb:login-button>
-    <div
-        class="fb-like"
-        data-share="true"
-        data-width="450"
-        data-show-faces="true">
     </div>
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
