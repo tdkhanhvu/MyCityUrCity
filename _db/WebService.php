@@ -18,7 +18,7 @@
             break;
         case "InsertNewComment":
             $result = $mysql->insertNewComment($_POST['userId'],$_POST['userName']
-                ,$_POST['country'],$_POST['city'],$_POST['content']);
+                ,$_POST['country'],$_POST['city'],$_POST['content'],$_POST['images']);
             break;
         default:
             break;

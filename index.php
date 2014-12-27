@@ -15,6 +15,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/upload/dropzone.css" />
     <link rel="stylesheet" type="text/css" href="css/main.css" />
 </head>
 <body ng-controller="CommentController as cmtCtrl" class="container-fluid">
@@ -36,6 +37,7 @@
                 <textarea class="form-control" ng-model="cmtCtrl.newComment.content" required></textarea>
                 <div> reviewForm is {{commentForm.$valid}} </div>
                 <input class="form-control" type="submit" value="Submit"/>
+                <span class="glyphicon glyphicon-camera photo_upload_icon">
             </div>
         </form>
     </div>
@@ -56,6 +58,7 @@
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/angular.min.js"></script>
+    <script type="text/javascript" src="js/upload/dropzone.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
     <script type="text/javascript" src="js/session.js"></script>
 </body>

@@ -119,13 +119,23 @@ class MySQL {
             $cmt['userPic'] = 'https://graph.facebook.com/'.$cmt['userId'].'/picture?type=large';
             $cmt['name'] = $user[0]['name'];
             $images = $this->selectFromTable('image', [['commentId', $cmt['id']]]);
-            if (sizeof($images) > 0)
-                $cmt['image'] = 'images/'.$images[0]['url'];
+            //if (sizeof($images) > 0)
+            //    $cmt['image'] = 'uploaded_file/'.$images[0]['url'];
+
+            if (sizeof($images) > 0) {
+                $cmt['images'] = array();
+
+                foreach ($images as $img) {
+                    array_push($cmt['images'],'uploaded_file/'.$img['url']);
+                }
+            }
         }
         return $comments;
 	}
 
-    public function insertNewComment($userId, $userName, $country, $city, $content) {
+    public function insertNewComment($userId, $userName, $country, $city, $content, $img) {
+        $images = isset($img) ? json_decode($img) : null;
+
         $user = $this->selectFromTable('user', [['id', $userId]]);
 
         //user not exists, create
@@ -150,105 +160,26 @@ class MySQL {
                 ['content', $content]
             ]);
 
+        if (isset($images)) {
+            foreach ($images as &$img) {
+                $this->insertIntoTable('image',
+                    [
+                        ['commentId', $commentId],
+                        ['url', $img],
+                    ]);
+                $img = 'uploaded_file/'.$img;
+            }
+        }
+
         $result = array();
 
         $result['id'] = $commentId;
         $result['flag'] = $this->getFlag($country);
         $result['citizenship'] = $this->getCitizenship($country);
         $result['color'] = $this->getColor($country);
+        $result['images'] = $images;
         return $result;
     }
-
-
-	// Select all companies from a particular industry
-	public function selectAllCompaniesFromIndustry($ind) {
-		$result_set = array();
-	    $rels = $this->selectFromTable('ind_com', [['industry', $ind]]);
-	    foreach ($rels as $key => $value) {
-	    	$com = $this->selectFromTable('company', [['id', $value['company']]]);
-	    	if ($com != null) {
-	    		array_push($result_set, $com[0]);
-	    	}
-	    }
-	    
-	    return $result_set;
-	}
-
-    public function selectCompanyInfo($id)
-    {
-        $rels = $this->selectFromTable('company', [['id', $id]]);
-
-        return $rels[0];
-    }
-	// Select all branches from a particular company
-	public function selectAllBranchesFromCompany($ind) {
-		$result_set = array();
-	    $rels = $this->selectFromTable('com_branch', [['company', $ind]]);
-	    foreach ($rels as $key => $value) {
-	    	$branches = $this->selectFromTable('branch', [['id', $value['branch']]]);
-	    	if ($branches != null) {
-	    		array_push($result_set, $branches[0]);
-	    	}
-	    }
-	    
-	    return $result_set;
-	}
-
-	// Select all threads from a particular branch
-	public function selectThreadsFromBranch($id, $user_id = null, $start = 1, $length = 10) {
-		$start -= 1;	// For Mysql to start at $start
-		$threads = $this->selectFromTable('thread', [['branch_id', $id]], null, "LIMIT $start, $length");
-		foreach ($threads as &$thr) {
-			// Category manipulation
-			$cat = $this->selectFromTable('category', [['thread_id', $thr['id']]]);
-			$thr['categories'] = $cat;
-
-			// User manipulation
-			$user_info = $this->selectFromTable('user', [['id', $thr['user_id']]]);
-			$thr['name'] = $user_info[0]['name'];
-			$thr['photo'] = $user_info[0]['photo'];
-
-			// Image manipulation
-			$images = $this->selectFromTable('thread_image', [['thread_id', $thr['id']]]);
-			$thr['images'] = $images;
-
-			// User vote up/down
-			$thr['vote'] = '';
-			if ($user_id != null) {
-				// Up voters
-				$up_voters = $this->selectVotersFromItemID('thread', 'up', $thr['id']);
-				foreach ($up_voters as $up_voter) {
-					if ($up_voter['fb_id'] == $user_id) {
-						$thr['vote'] = 'up';
-						break;
-					}
-				}
-
-				// Down voters
-				$down_voters = $this->selectVotersFromItemID('thread', 'down', $thr['id']);
-				foreach ($down_voters as $down_voter) {
-					if ($down_voter['fb_id'] == $user_id) {
-						$thr['vote'] = 'down';
-						break;
-					}
-				}
-			}
-
-			// User spam report
-			$thr['spam_report'] = 0;
-			if ($user_id != null) {
-				// Spam reporters
-				$spam_reporters = $this->selectSpamReporters('thread', $thr['id'], $user_type = 'fb_id');
-				foreach ($spam_reporters as $reporter) {
-					if ($reporter['fb_id'] == $user_id) {
-						$thr['spam_report'] = 1;
-						break;
-					}
-				}
-			}
-		}
-	    return $threads;
-	}
 
 	// Select all comments from a particular thread
 	public function selectCommentsFromThread($id, $user_id = null, $start = 1, $length = 10) {

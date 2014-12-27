@@ -1,9 +1,29 @@
 var app = angular.module('world', [ ]),
     serviceUrl = './_db/WebService.php',
     userId = -1,
-    userName = '';
+    userName = '',
+    uploaders = [];
 
 (function(){
+    $('body').on('click', '.photo_upload_icon', function() {
+        var icon = $(this),
+            form = icon.parent().find('form');
+
+        if (form.length) {
+            form.toggle();
+        }
+        else {
+            var id = 'photoUpload';
+            $('<form action="/file-upload" class="dropzone" id="' + id + '"></form>').insertAfter(icon);
+
+            Dropzone.autoDiscover = false;
+            uploaders[id] = new Dropzone("#" + id, {
+                url: "upload.php",
+                addRemoveLinks: true
+            });
+        }
+    });
+
     app.controller('CommentController', function($scope){
         this.countries = [{
             id: 'Vietnam',
@@ -43,7 +63,8 @@ var app = angular.module('world', [ ]),
                 type: "post",
                 data: {'request':'InsertNewComment', 'userId': userId, 'userName': userName,
                     'country' : this.newComment.country, 'city': this.newComment.city,
-                    'content': this.newComment.content
+                    'content': this.newComment.content,
+                    'images': JSON.stringify(getUploadedPhoto('photoUpload'))
                 },
                 dataType: 'json',
                 success: function(result){
@@ -51,7 +72,8 @@ var app = angular.module('world', [ ]),
                         id:result.id,
                         flag: result.flag,
                         color: result.color,
-                        citizenship: result.citizenship
+                        citizenship: result.citizenship,
+                        images: result.images
                     });
                     that.comments.push(that.newComment);
                     that.newComment = {};
@@ -66,6 +88,10 @@ var app = angular.module('world', [ ]),
         }
     });
     app.controller('SessionController', function(){
+        this.isLogin = true;
+    });
+
+    app.controller('FilterController', function(){
         this.isLogin = true;
     });
 
@@ -93,7 +119,7 @@ function loadAllComments(comments) {
           addMoreStuff(result).forEach(function(comment) {
               comments.push(comment);
           });
-            console.log(comments);
+          console.log(comments);
         },
         error: function(xhr, status, error) {
             console.log(xhr.responseText);
@@ -104,6 +130,30 @@ function addMoreStuff(comments) {
     return comments;
 }
 
+function removeFileFromServer(fileName) {
+    $.ajax({
+        url: './upload.php',
+        type: "post",
+        data: {'fileName':fileName},
+        dataType: 'json',
+        success: function(result){
+        },
+        error: function(xhr, status, error) {
+            alert(xhr.responseText);
+        }
+    });
+}
+
+function getUploadedPhoto(id) {
+    var fileNames = [];
+
+    if (typeof uploaders[id] !='undefined')
+        uploaders[id].files.forEach(function(file) {
+            fileNames.push(file.uploadName);
+        });
+
+    return fileNames;
+}
 // This is called with the results from from FB.getLoginStatus().
 function statusChangeCallback(response) {
     console.log('statusChangeCallback');
