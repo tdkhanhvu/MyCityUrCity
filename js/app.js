@@ -30,41 +30,33 @@ var app = angular.module('world', ['ngSanitize', 'ui.select','infinite-scroll'])
     });
 
     app.controller('CommentController', function($scope, $rootScope){
-//        this.countries = [{
-//            id: 'Vietnam',
-//            label: 'Vietnam',
-//            cities: [{
-//                id: 'Ho Chi Minh'
-//            },{
-//                id: 'Ha Noi'
-//            }]
-//        }, {
-//            id: 'United Kingdom',
-//            label: 'United Kingdom',
-//            cities: [{
-//                id: 'London'
-//            },{
-//                id: 'Cambridge'
-//            }]
-//        }];
-        this.countries = [];
+        $scope.countries = [];
         var that = this;
-        $rootScope.$watch('countries', function( status )
-        {
-           that.countries = $rootScope.countries;
-           that.countries.shift();
-        });
-        this.cities = [];
+        $scope.newComment = {};
+        $scope.cities = [];
+        $scope.comments = [];
 
-        this.comments = [];
-        loadAllComments(this.comments);
+        var that = this;
+
+        $rootScope.$watch('countries', function()
+        {
+            $scope.countries = $rootScope.countries;
+            $scope.countries.shift();
+        });
+
+        $scope.$watch('newComment.country', function()
+        {
+            if ($scope.newComment.country !== undefined) {
+                loadAllCities($scope.cities, $scope.newComment.country.id, $scope);
+            }
+        });
+
+        loadAllComments($scope.comments);
+
         this.loadData = function() {
-            loadAllComments(this.comments);
+            loadAllComments($scope.comments);
         };
 
-
-        this.newComment = {};
-        var that = this;
         this.addComment = function() {
             this.newComment.country = this.newComment.country['id'];
             this.newComment.city = this.newComment.city['id'];
@@ -98,53 +90,7 @@ var app = angular.module('world', ['ngSanitize', 'ui.select','infinite-scroll'])
 
 
         }
-    }).directive('lazyLoadOptions', ['$rootScope', function($rootScope) {
-            return {
-                restrict: 'EA',
-                require: 'ngModel',
-                scope: {
-                    options: '='
-                },
-                link: function($scope, $element, $attrs, $ngModel){
-                    // Ajax loading notification
-                    $scope.options = [
-                        {
-                            name: "Loading..."
-                        }
-                    ];
-
-                    // Control var to prevent infinite loop
-                    $scope.loaded = false;
-
-                    $element.bind('mousedown', function() {
-
-                        // Use setTimeout to simulate web service call
-                        setTimeout(function(){
-                            if(!$scope.loaded) {
-                                $scope.$apply(function(){
-                                    console.log('vu');
-                                    console.log($rootScope.countries);
-                                    $scope.options = $rootScope.countries;
-                                });
-
-                                // Prevent the load from occurring again
-                                $scope.loaded = true;
-
-                                // Blur the element to collapse it
-                                $element[0].blur();
-
-                                // Click the element to re-open it
-                                var e = document.createEvent("MouseEvents");
-                                e.initMouseEvent("mousedown", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-                                $element[0].dispatchEvent(e);
-                            }
-                        }, 2000);
-                    });
-                }
-            }
-        }])
-
-    ;
+    });
 
 
     app.controller('SessionController', ['$scope', function($scope){
@@ -216,8 +162,29 @@ function loadAllCountries(countries) {
         dataType: 'json',
         success: function(result){
             result.forEach(function(country) {
-                countries.push({'name':country.name});
+                countries.push({'name':country.name, 'id': country.id});
             });
+        },
+        error: function(xhr, status, error) {
+            console.log(xhr.responseText);
+        }
+    });
+}
+
+function loadAllCities(cities, countryId, $scope) {
+    $.ajax({
+        url: serviceUrl,
+        type: "post",
+        data: {'request':'GetAllCitiesForACountry', 'countryId':countryId},
+        dataType: 'json',
+        success: function(result){
+            cities.length = 0;
+
+            result.forEach(function(city) {
+                console.log('add city ' + city.name);
+                cities.push(city);
+            });
+            $scope.$apply();
         },
         error: function(xhr, status, error) {
             console.log(xhr.responseText);

@@ -117,6 +117,12 @@ class MySQL {
         return $countries;
     }
 
+    public function getAllCitiesForACountry($countryId) {
+        $cities = $this->selectFromTable('city',[['countryId', $countryId]]);
+        return $cities;
+    }
+
+
     public function insertNewComment($userId, $userName, $country, $city, $content, $img) {
         $images = isset($img) ? json_decode($img) : null;
 

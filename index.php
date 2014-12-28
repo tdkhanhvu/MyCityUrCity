@@ -36,9 +36,8 @@
                 <div class="form-group">
                     <label for="country" class="col-sm-2 control-label">Country</label>
                     <div class="col-sm-10">
-                        <select id="country" class="form-control" ng-model="cmtCtrl.newComment.country" required
-                                ng-disabled="!sessionCtrl.isLogin()" lazy-load-options="" data-options="select.options"
-                                ng-options="o.name for o in select.options">
+                        <select id="country" class="form-control" ng-model="newComment.country" required
+                                ng-disabled="!sessionCtrl.isLogin()" ng-options="country.name for country in countries track by country.id">
                         </select>
                     </div>
                 </div>
@@ -46,9 +45,8 @@
                     <label for="city" class="col-sm-2 control-label">City</label>
                     <div class="col-sm-10">
                         <select id="city" class="form-control" ng-disabled="!sessionCtrl.isLogin()
-                                || !cmtCtrl.newComment.country" ng-model="cmtCtrl.newComment.city" required
-<!--                                ng-options="city.id for city in cmtCtrl.newComment.country.cities track by city.id">-->
-                        ng-options="o.name for o in cmtCtrl.newComment.country">
+                                || !newComment.country" ng-model="newComment.city" required
+                                ng-options="city.name for city in cities track by city.id">
                         </select>
                     </div>
                 </div>
