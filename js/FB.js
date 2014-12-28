@@ -107,7 +107,11 @@ function setCountry(userId) {
                     $scope = angular.element(ctrlElement).scope();
 
                 $scope.$apply(function() {
-                    $scope.cmtCtrl.newComment.country = $scope.cmtCtrl.countries[result.countryId - 1];
+                    $scope.cmtCtrl.newComment.country = $scope.cmtCtrl.countries.filter(function(country) {
+                        if (country.id == result.countryId) {
+                            return country;
+                        }
+                    })[0];
                     $scope.cmtCtrl.changeCountry();
                 });
 
