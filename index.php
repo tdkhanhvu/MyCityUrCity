@@ -38,6 +38,10 @@
     <script type="text/javascript" src="js/upload/dropzone.js"></script>
     <script type="text/javascript" src="js/select2/select.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript" src="js/FB.js"></script>
+    <script type="text/javascript" src="js/controllers/CommentController.js"></script>
+    <script type="text/javascript" src="js/controllers/SessionController.js"></script>
+    <script type="text/javascript" src="js/controllers/FilterController.js"></script>
     <script type="text/javascript" src="js/session.js"></script>
 </body>
 </html>
