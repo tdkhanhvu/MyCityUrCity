@@ -30,56 +30,57 @@ var app = angular.module('world', ['ngSanitize', 'ui.select','infinite-scroll'])
     });
 
     app.controller('CommentController', function($scope, $rootScope){
-        $scope.countries = [];
-        $scope.newComment = {};
-        $scope.cities = [];
-        $scope.comments = [];
+        var that = this;
+        that.countries = [];
+        that.newComment = {};
+        that.cities = [];
+        that.comments = [];
 
-        $rootScope.$watch('countries', function(newValue, oldValue)
-        {
-            $scope.countries = $rootScope.countries;
-            $scope.countries.shift();
-        });
-
-        $scope.$watch('newComment.country', function()
-        {
-            if ($scope.newComment.country !== undefined && $scope.newComment.country.id !== undefined) {
-                loadAllCities($scope.cities, $scope.newComment.country.id, $scope);
+        that.changeCountry = function() {
+            if (that.newComment.country !== undefined && that.newComment.country.id !== undefined) {
+                loadAllCities(that.cities, that.newComment.country.id, $scope);
             }
+        }
+        $rootScope.$watchCollection('countries', function(newValue, oldValue)
+        {
+            $rootScope.countries.forEach(function(country) {
+                that.countries.push(country);
+            });
+            //$scope.countries.shift();
         });
 
         //load initial comments
-        loadAllComments($scope.comments);
+        loadAllComments(that.comments);
 
         //infinite scroll
-        $scope.loadData = function() {
-            loadAllComments($scope.comments);
+        that.loadData = function() {
+            loadAllComments(that.comments);
         };
 
-        $scope.addComment = function() {
+        that.addComment = function() {
             $.ajax({
                 url: serviceUrl,
                 type: "post",
                 data: {'request':'InsertNewComment', 'userId': userId, 'userName': userName,
-                    'cityId': $scope.newComment.city['id'],'content': $scope.newComment.content,
+                    'cityId': that.newComment.city['id'],'content': that.newComment.content,
                     'images': JSON.stringify(getUploadedPhoto('photoUpload'))
                 },
                 dataType: 'json',
                 success: function(result){
-                    var temp = {'content': $scope.newComment.content};
+                    var temp = {'content': that.newComment.content};
                     $.extend(temp, {
                         userName: userName,
-                        nationality: $scope.newComment.country.nationality,
-                        cityName: $scope.newComment.city.name,
+                        nationality: that.newComment.country.nationality,
+                        cityName: that.newComment.city.name,
                         id:result.id,
                         flag: result.flag,
                         color: result.color,
                         images: result.images
                     });
-                    $scope.comments.splice(0,0,temp);
+                    that.comments.splice(0,0,temp);
 
                     $scope.$apply(function() {
-                        $scope.newComment.content = '';
+                        that.newComment.content = '';
                         removeImageFromPreview();
                     });
                 },
@@ -99,18 +100,20 @@ var app = angular.module('world', ['ngSanitize', 'ui.select','infinite-scroll'])
     }]);
 
     app.controller('FilterController', function($scope, $rootScope){
-        $scope.customFilter = function (item) {
-            return $scope.country.selected === undefined ||
-                $scope.country.selected.name === 'All' ||
-                $scope.country.selected.name === item.country;
+        var that = this;
+        that.customFilter = function (item) {
+            return that.country.selected === undefined ||
+                that.country.selected.name === 'All' ||
+                that.country.selected.name === item.countryName;
         };
 
 
-        $scope.country = {};
-        $rootScope.countries = [{name: 'All'}];
-        loadAllCountries($rootScope.countries);
+        that.country = {};
+        that.countries = [{name: 'All'}];
+        $rootScope.countries = [];
+        loadAllCountries($rootScope.countries, that.countries, $rootScope);
 
-        $scope.changeSelect = function($item, $model) {
+        that.changeSelect = function($item, $model) {
             filter = $item.name;
         }
     });
@@ -119,6 +122,12 @@ var app = angular.module('world', ['ngSanitize', 'ui.select','infinite-scroll'])
         return {
             restrict: 'E',
             templateUrl: 'comment.html'
+        };
+    });
+    app.directive('inputcomment', function(){
+        return {
+            restrict: 'E',
+            templateUrl: 'inputcomment.html'
         };
     });
 })();
@@ -151,7 +160,7 @@ function loadAllComments(comments) {
     }
 }
 
-function loadAllCountries(countries) {
+function loadAllCountries(rootCountries, countries, $rootScope) {
     $.ajax({
         url: serviceUrl,
         type: "post",
@@ -160,7 +169,9 @@ function loadAllCountries(countries) {
         success: function(result){
             result.forEach(function(country) {
                 countries.push(country);
+                rootCountries.push(country);
             });
+            //$rootScope.$apply();
         },
         error: function(xhr, status, error) {
             console.log(xhr.responseText);
@@ -178,6 +189,7 @@ function loadAllCities(cities, countryId, $scope) {
             cities.length = 0;
 
             result.forEach(function(city) {
+                console.log(city);
                 cities.push(city);
             });
             $scope.$apply();
@@ -329,12 +341,13 @@ function setCountry(userId) {
                     $scope = angular.element(ctrlElement).scope();
 
                 $scope.$apply(function() {
-                    $scope.newComment.country = $scope.countries[result.countryId - 1];
+                    $scope.cmtCtrl.newComment.country = $scope.cmtCtrl.countries[result.countryId - 1];
+                    $scope.cmtCtrl.changeCountry();
                 });
 
                 setTimeout(function(){
                     $scope.$apply(function() {
-                        $scope.newComment.city = $scope.cities.filter(function(city) {
+                        $scope.cmtCtrl.newComment.city = $scope.cmtCtrl.cities.filter(function(city) {
                             if (city.id == result.cityId) {
                                 return city;
                             }
