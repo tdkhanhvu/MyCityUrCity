@@ -9,7 +9,7 @@
     $mysql = new MySQL();
     $result = array();
     $user_id = null;
-    $limit = 1;
+    $limit = 3;
 
     switch($request) {
         case "GetUserDetail":

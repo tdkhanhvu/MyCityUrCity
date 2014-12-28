@@ -147,7 +147,7 @@ class MySQL {
             [
                 ['id', $userId],
                 ['name', $userName],
-                ['city', $cityId]
+                ['cityId', $cityId]
             ]);
         else {
             if ($user[0]['name'] != $userName || $user[0]['cityId'] != $cityId)
