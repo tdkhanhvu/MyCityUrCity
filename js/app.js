@@ -121,13 +121,31 @@ var app = angular.module('world', ['ngSanitize', 'ui.select','infinite-scroll'])
     app.directive('comment', function(){
         return {
             restrict: 'E',
-            templateUrl: 'comment.html'
+            templateUrl: 'template/comment.html'
         };
     });
     app.directive('inputcomment', function(){
         return {
             restrict: 'E',
-            templateUrl: 'inputcomment.html'
+            templateUrl: 'template/inputcomment.html'
+        };
+    });
+    app.directive('userdetail', function(){
+        return {
+            restrict: 'E',
+            templateUrl: 'template/userdetail.html'
+        };
+    });
+    app.directive('commentdetail', function(){
+        return {
+            restrict: 'E',
+            templateUrl: 'template/commentdetail.html'
+        };
+    });
+    app.directive('filter', function(){
+        return {
+            restrict: 'E',
+            templateUrl: 'template/filter.html'
         };
     });
 })();

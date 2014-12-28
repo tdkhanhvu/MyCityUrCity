@@ -1,0 +1,7 @@
+<img id="profilePic" class="img-thumbnail" ng-show="sessionCtrl.isLogin()"
+     src=""/>
+<p id="userName" class="text-center" ng-show="sessionCtrl.isLogin()">Nguyễn Quang Phúc</p>
+<p ng-show="!sessionCtrl.isLogin()">Please login to comment</p>
+<fb:login-button scope="public_profile,email" onlogin="checkLoginState();"
+                 ng-show="!sessionCtrl.isLogin()">
+</fb:login-button>

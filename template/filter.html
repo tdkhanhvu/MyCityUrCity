@@ -1,0 +1,7 @@
+<ui-select ng-model="filterCtrl.country.selected" theme="bootstrap" ng-disabled="disabled"
+           on-select="filterCtrl.changeSelect($item, $model)">
+    <ui-select-match placeholder="Filter By Country">{{$select.selected.name}}</ui-select-match>
+    <ui-select-choices repeat="country in filterCtrl.countries | filter: $select.search">
+        <span ng-bind-html="country.name | highlight: $select.search"></span>
+    </ui-select-choices>
+</ui-select>
