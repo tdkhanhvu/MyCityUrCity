@@ -37,8 +37,8 @@
                     <label for="country" class="col-sm-2 control-label">Country</label>
                     <div class="col-sm-10">
                         <select id="country" class="form-control" ng-model="cmtCtrl.newComment.country" required
-                                ng-disabled="!sessionCtrl.isLogin()"
-                                ng-options="item.label for item in cmtCtrl.countries track by item.id">
+                                ng-disabled="!sessionCtrl.isLogin()" lazy-load-options="" data-options="select.options"
+                                ng-options="o.name for o in select.options">
                         </select>
                     </div>
                 </div>
@@ -47,7 +47,8 @@
                     <div class="col-sm-10">
                         <select id="city" class="form-control" ng-disabled="!sessionCtrl.isLogin()
                                 || !cmtCtrl.newComment.country" ng-model="cmtCtrl.newComment.city" required
-                                ng-options="city.id for city in cmtCtrl.newComment.country.cities track by city.id">
+<!--                                ng-options="city.id for city in cmtCtrl.newComment.country.cities track by city.id">-->
+                        ng-options="o.name for o in cmtCtrl.newComment.country">
                         </select>
                     </div>
                 </div>
@@ -68,12 +69,11 @@
                 </div>
             </form>
             <div class="col-md-4">
-                <ui-select ng-model="country.selected" theme="selectize" ng-disabled="disabled"
+                <ui-select ng-model="country.selected" theme="bootstrap" ng-disabled="disabled"
                            on-select="changeSelect($item, $model)">
                     <ui-select-match placeholder="Filter By Country">{{$select.selected.name}}</ui-select-match>
                     <ui-select-choices repeat="country in countries | filter: $select.search">
                         <span ng-bind-html="country.name | highlight: $select.search"></span>
-                        <small ng-bind-html="country.code | highlight: $select.search"></small>
                     </ui-select-choices>
                 </ui-select>
             </div>

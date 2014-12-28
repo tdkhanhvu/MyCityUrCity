@@ -70,16 +70,15 @@ class MySQL {
 	}
 
     private function selectCommentsFromTable($filter, $limit) {
-        $query = 'SELECT u.city AS city, u.country AS country, u.name AS name,
-            u.id AS userId, c.content AS content, c.id AS id
-            FROM user u, comment c WHERE u.id = c.userId';
+        $query = 'SELECT country.name AS countryName, country.nationality as nationality, country.flag as flag, country.color as color, city.name AS cityName, user.name AS userName, user.id AS userId, comment.content AS content, comment.id AS id
+            FROM user, comment, country, city WHERE user.id = comment.userId AND user.cityId = city.id AND city.countryId = country.id';
 
         // Criteria
         if($filter != "all") {
-            $query .= " AND u.country = '".$filter."' ";
+            $query .= " AND country.name = '".$filter."' ";
         }
 
-        $query .= " ORDER BY c.id DESC ".$limit;
+        $query .= " ORDER BY comment.id DESC ".$limit;
 
         try {
             $stm = $this->dbh->prepare($query);
@@ -95,49 +94,13 @@ class MySQL {
         return null;
     }
 
-    private function getCitizenship($country) {
-        switch ($country) {
-            case 'Vietnam':
-                return 'Vietnamese';
-            case 'United Kingdom':
-                return 'British';
-            default:
-                return 'UFO';
-        }
-    }
-
-    private function getFlag($country) {
-        switch ($country) {
-            case 'Vietnam':
-                return 'images/flag/'.'vietnam.png';
-            case 'United Kingdom':
-                return 'images/flag/'.'unitedkingdom.png';
-            default:
-                return 'images/flag/'.'UFO.png';
-        }
-    }
-
-    private function getColor($country) {
-        switch ($country) {
-            case 'Vietnam':
-                return 'red';
-            case 'United Kingdom':
-                return 'rgb(15, 15, 90)';
-            default:
-                return 'black';
-        }
-    }
-
 	// Select all industries
 	public function selectAllComments($filter, $start, $length) {
         $comments = $this->selectCommentsFromTable($filter, "LIMIT $start, $length");
         foreach ($comments as &$cmt) {
-            $cmt['citizenship'] = $this->getCitizenship($cmt['country']);
-            $cmt['flag'] = $this->getFlag($cmt['country']);
-            $cmt['color'] = $this->getColor($cmt['country']);
             $cmt['userPic'] = 'https://graph.facebook.com/'.$cmt['userId'].'/picture?type=large';
             $images = $this->selectFromTable('image', [['commentId', $cmt['id']]]);
-
+            $cmt['flag'] = './images/flag/'.$cmt['flag'];
             if (sizeof($images) > 0) {
                 $cmt['images'] = array();
 
@@ -148,6 +111,11 @@ class MySQL {
         }
         return $comments;
 	}
+
+    public function getAllCountry() {
+        $countries = $this->selectFromTable('country');
+        return $countries;
+    }
 
     public function insertNewComment($userId, $userName, $country, $city, $content, $img) {
         $images = isset($img) ? json_decode($img) : null;

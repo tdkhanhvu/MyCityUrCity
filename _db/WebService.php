@@ -12,6 +12,9 @@
     $limit = 1;
 
     switch($request) {
+        case "GetAllCountries":
+            $result = $mysql->getAllCountry();
+            break;
         case "GetAllComments":
             $result = $mysql->selectAllComments($_POST['filter'], $_POST['start'], $limit);
             break;
