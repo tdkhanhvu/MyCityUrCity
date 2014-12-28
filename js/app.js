@@ -44,6 +44,12 @@ function setTemplateDirective() {
             templateUrl: 'template/filter.html'
         };
     });
+    app.directive('aboutus', function(){
+        return {
+            restrict: 'E',
+            templateUrl: 'template/aboutus.html'
+        };
+    });
 }
 
 function createUploadForm() {

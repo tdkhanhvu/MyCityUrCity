@@ -1,13 +1,21 @@
+.main {
+    width:80%;
+    margin: 0 auto;
+}
+
+p {
+    margin: 0 0 30px;
+}
+
+.menu {
+    margin-bottom: 20px;
+}
+
 .comments, .inputComment {
     margin: 0 auto;
 }
 
-.comments {
-    width: 83%;
-}
-
 .inputComment {
-    width: 80%;
     border: 2px solid black;
     padding: 10px 10px 0px;
 }

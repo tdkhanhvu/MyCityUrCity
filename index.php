@@ -21,15 +21,34 @@
     <link rel="stylesheet" type="text/css" href="css/main.css" />
 </head>
 <body ng-controller="CommentController as cmtCtrl" class="container-fluid">
-    <div ng-controller="FilterController as filterCtrl">
-        <inputcomment></inputcomment>
-        <div class="row comments">
-            <div infinite-scroll="cmtCtrl.loadData()" infinite-scroll-distance="3"
-                 ng-repeat="comment in cmtCtrl.comments | filter: filterCtrl.customFilter">
-                <comment></comment>
+<div ng-controller="FilterController as filterCtrl" class="main">
+    <div role="tabpanel">
+</div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs nav-pills menu" role="tablist">
+        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
+        <li role="presentation"><a href="#about" aria-controls="about" role="tab" data-toggle="tab">About Project</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane fade in active" id="home">
+            <inputcomment></inputcomment>
+
+            <div class="row comments">
+                <div infinite-scroll="cmtCtrl.loadData()" infinite-scroll-distance="3"
+                     ng-repeat="comment in cmtCtrl.comments | filter: filterCtrl.customFilter">
+                    <comment></comment>
+                </div>
             </div>
         </div>
+        <div role="tabpanel" class="tab-pane fade" id="about">
+            <aboutus></aboutus>
+        </div>
     </div>
+
+</div>
+
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/angular.min.js"></script>
