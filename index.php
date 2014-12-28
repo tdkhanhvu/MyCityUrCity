@@ -42,6 +42,5 @@
     <script type="text/javascript" src="js/controllers/CommentController.js"></script>
     <script type="text/javascript" src="js/controllers/SessionController.js"></script>
     <script type="text/javascript" src="js/controllers/FilterController.js"></script>
-    <script type="text/javascript" src="js/session.js"></script>
 </body>
 </html>

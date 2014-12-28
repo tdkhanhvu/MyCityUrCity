@@ -91,7 +91,7 @@ function setUserId(userId) {
     var ctrlElement = document.querySelector('[ng-controller="SessionController as sessionCtrl"]'),
         $scope = angular.element(ctrlElement).scope();
     $scope.$apply(function() {
-        $scope.userId = userId;
+        $scope.sessionCtrl.userId = userId;
     });
 }
 

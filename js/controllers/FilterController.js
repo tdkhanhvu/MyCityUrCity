@@ -7,11 +7,10 @@
                 that.country.selected.name === item.countryName;
         };
 
-
         that.country = {};
         that.countries = [{name: 'All'}];
         $rootScope.countries = [];
-        loadAllCountries($rootScope.countries, that.countries, $rootScope);
+        loadAllCountries($rootScope.countries, that.countries);
 
         that.changeSelect = function($item, $model) {
             filter = $item.name;
@@ -19,7 +18,7 @@
     });
 })();
 
-function loadAllCountries(rootCountries, countries, $rootScope) {
+function loadAllCountries(rootCountries, countries) {
     $.ajax({
         url: serviceUrl,
         type: "post",
@@ -30,7 +29,6 @@ function loadAllCountries(rootCountries, countries, $rootScope) {
                 countries.push(country);
                 rootCountries.push(country);
             });
-            //$rootScope.$apply();
         },
         error: function(xhr, status, error) {
             console.log(xhr.responseText);

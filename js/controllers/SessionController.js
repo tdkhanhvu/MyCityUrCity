@@ -1,8 +1,9 @@
 (function(){
     app.controller('SessionController', ['$scope', function($scope){
-        $scope.userId = userId;
-        this.isLogin = function() {
-            return $scope.userId != -1;
+        var that = this;
+        that.userId = userId;
+        that.isLogin = function() {
+            return that.userId != -1;
         };
     }]);
 })();

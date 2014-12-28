@@ -11,12 +11,11 @@
                 loadAllCities(that.cities, that.newComment.country.id, $scope);
             }
         }
-        $rootScope.$watchCollection('countries', function(newValue, oldValue)
+        $rootScope.$watchCollection('countries', function()
         {
             $rootScope.countries.forEach(function(country) {
                 that.countries.push(country);
             });
-            //$scope.countries.shift();
         });
 
         //load initial comments
