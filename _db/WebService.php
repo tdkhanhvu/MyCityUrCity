@@ -22,8 +22,8 @@
             $result = $mysql->selectAllComments($_POST['filter'], $_POST['start'], $limit);
             break;
         case "InsertNewComment":
-            $result = $mysql->insertNewComment($_POST['userId'],$_POST['userName']
-                ,$_POST['country'],$_POST['city'],$_POST['content'],$_POST['images']);
+            $result = $mysql->insertNewComment($_POST['userId'],$_POST['userName'],
+                $_POST['cityId'], $_POST['content'],$_POST['images']);
             break;
         default:
             break;

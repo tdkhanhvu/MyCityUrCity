@@ -31,12 +31,9 @@ var app = angular.module('world', ['ngSanitize', 'ui.select','infinite-scroll'])
 
     app.controller('CommentController', function($scope, $rootScope){
         $scope.countries = [];
-        var that = this;
         $scope.newComment = {};
         $scope.cities = [];
         $scope.comments = [];
-
-        var that = this;
 
         $rootScope.$watch('countries', function()
         {
@@ -46,41 +43,38 @@ var app = angular.module('world', ['ngSanitize', 'ui.select','infinite-scroll'])
 
         $scope.$watch('newComment.country', function()
         {
-            if ($scope.newComment.country !== undefined) {
+            if ($scope.newComment.country !== undefined && $scope.newComment.country.id !== undefined) {
                 loadAllCities($scope.cities, $scope.newComment.country.id, $scope);
             }
         });
 
         loadAllComments($scope.comments);
 
-        this.loadData = function() {
+        $scope.loadData = function() {
             loadAllComments($scope.comments);
         };
 
-        this.addComment = function() {
-            this.newComment.country = this.newComment.country['id'];
-            this.newComment.city = this.newComment.city['id'];
-
+        $scope.addComment = function() {
             $.ajax({
                 url: serviceUrl,
                 type: "post",
                 data: {'request':'InsertNewComment', 'userId': userId, 'userName': userName,
-                    'country' : this.newComment.country, 'city': this.newComment.city,
-                    'content': this.newComment.content,
+                    'cityId': $scope.newComment.city['id'],'content': $scope.newComment.content,
                     'images': JSON.stringify(getUploadedPhoto('photoUpload'))
                 },
                 dataType: 'json',
                 success: function(result){
-                    $.extend(that.newComment, {
-                        name: userName,
+                    $.extend($scope.newComment, {
+                        userName: userName,
+                        nationality: $scope.newComment.country.nationality,
+                        cityName: $scope.newComment.city.name,
                         id:result.id,
                         flag: result.flag,
                         color: result.color,
-                        citizenship: result.citizenship,
                         images: result.images
                     });
-                    that.comments.push(that.newComment);
-                    that.newComment = {};
+                    $scope.comments.splice(0,0,$scope.newComment);
+                    $scope.newComment = {};
                     $scope.$apply();
                 },
                 error: function(xhr, status, error) {
@@ -138,7 +132,6 @@ function loadAllComments(comments) {
             data: {'request':'GetAllComments', 'filter': filter, 'start':filterIndex[filter]},
             dataType: 'json',
             success: function(result){
-                console.log(result);
                 addMoreStuff(result).forEach(function(comment) {
                     if (!comments.filter(function (element, index, array) {return element.id == comment.id;}).length) {
                         comments.push(comment);
@@ -162,7 +155,7 @@ function loadAllCountries(countries) {
         dataType: 'json',
         success: function(result){
             result.forEach(function(country) {
-                countries.push({'name':country.name, 'id': country.id});
+                countries.push(country);
             });
         },
         error: function(xhr, status, error) {
@@ -181,7 +174,6 @@ function loadAllCities(cities, countryId, $scope) {
             cities.length = 0;
 
             result.forEach(function(city) {
-                console.log('add city ' + city.name);
                 cities.push(city);
             });
             $scope.$apply();
@@ -307,14 +299,9 @@ function testAPI() {
             $scope.userId = userId;
         });
 
-        console.log($scope);
-        //$scope.$apply(function() {
-        //    $scope.data.age = 20;
-        //});
         $('#profilePic').attr('src','https://graph.facebook.com/' + userId + '/picture?type=large');
         $('#userName').text(userName);
-        //$('#notLogin').hide();
-        //$('#login').show();
+
         $('.command_button').each(function(index, el) {
             showHideCommandButton(el);
         });

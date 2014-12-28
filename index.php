@@ -32,7 +32,7 @@
                                  ng-show="!sessionCtrl.isLogin()">
                 </fb:login-button>
             </div>
-            <form name="commentForm" class="form-horizontal col-md-6" ng-submit="commentForm.$valid && cmtCtrl.addComment()" novalidate>
+            <form name="commentForm" class="form-horizontal col-md-6" ng-submit="commentForm.$valid && addComment()" novalidate>
                 <div class="form-group">
                     <label for="country" class="col-sm-2 control-label">Country</label>
                     <div class="col-sm-10">
@@ -54,7 +54,7 @@
                     <label for="content" class="col-sm-2 control-label">Content</label>
                     <div class="col-sm-10">
                         <input id="content" class="form-control" ng-disabled="!sessionCtrl.isLogin()"
-                               ng-model="cmtCtrl.newComment.content" required/>
+                               ng-model="newComment.content" required/>
                         <span class="glyphicon glyphicon-camera photo_upload_icon"
                               style="position:relative; top:-33px;float:right;font-size:35px;height:0;"></span>
                     </div>
@@ -78,8 +78,8 @@
         </div>
 
         <div class="row comments">
-            <div infinite-scroll="cmtCtrl.loadData()" infinite-scroll-distance="3"
-                 ng-repeat="comment in cmtCtrl.comments | filter: customFilter">
+            <div infinite-scroll="loadData()" infinite-scroll-distance="3"
+                 ng-repeat="comment in comments | filter: customFilter">
                 <comment></comment>
             </div>
         </div>

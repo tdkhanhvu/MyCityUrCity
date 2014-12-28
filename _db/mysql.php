@@ -123,7 +123,7 @@ class MySQL {
     }
 
 
-    public function insertNewComment($userId, $userName, $country, $city, $content, $img) {
+    public function insertNewComment($userId, $userName, $cityId, $content, $img) {
         $images = isset($img) ? json_decode($img) : null;
 
         $user = $this->selectFromTable('user', [['id', $userId]]);
@@ -134,14 +134,12 @@ class MySQL {
             [
                 ['id', $userId],
                 ['name', $userName],
-                ['country', $country],
-                ['city', $city]
+                ['city', $cityId]
             ]);
         else {
-            if ($user[0]['name'] != $userName || $user[0]['city'] != $city
-                    || $user[0]['country'] != $country)
-                $this->updateTable('user', [['name', $userName],['country', $country],
-                    ['city', $city]],[['id', $userId]]);
+            if ($user[0]['name'] != $userName || $user[0]['cityId'] != $cityId)
+                $this->updateTable('user', [['name', $userName],['city', $cityId]],
+                    [['id', $userId]]);
         }
 
         $commentId = $this->insertIntoTable('comment',
@@ -163,10 +161,13 @@ class MySQL {
 
         $result = array();
 
+        $city = $this->selectFromTable('city',[['id', $cityId]]);
+        $country = $this->selectFromTable('country',[['id', $city[0]['countryId']]]);
+
         $result['id'] = $commentId;
-        $result['flag'] = $this->getFlag($country);
-        $result['citizenship'] = $this->getCitizenship($country);
-        $result['color'] = $this->getColor($country);
+        $result['flag'] = './images/flag/'.$country[0]['flag'];
+        $result['nationality'] = $country[0]['nationality'];
+        $result['color'] = $country[0]['color'];
         $result['images'] = $images;
         return $result;
     }

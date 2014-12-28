@@ -5,7 +5,7 @@
         <img ng-src="{{comment.flag}}" class="img-thumbnail"/>
     </div>
     <div class="col-md-8">
-        <p> We are {{comment.citizenship}} and {{comment.content}}</p>
+        <p> We are {{comment.nationality}} and {{comment.content}}</p>
         <img ng-repeat="image in comment.images" ng-show="image" ng-src="{{image}}" class="img-thumbnail"/>
         <button ng-show="ssCtrl.isLogin">Like</button>
     </div>
