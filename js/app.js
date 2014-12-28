@@ -35,7 +35,7 @@ var app = angular.module('world', ['ngSanitize', 'ui.select','infinite-scroll'])
         $scope.cities = [];
         $scope.comments = [];
 
-        $rootScope.$watch('countries', function()
+        $rootScope.$watch('countries', function(newValue, oldValue)
         {
             $scope.countries = $rootScope.countries;
             $scope.countries.shift();
@@ -48,8 +48,10 @@ var app = angular.module('world', ['ngSanitize', 'ui.select','infinite-scroll'])
             }
         });
 
+        //load initial comments
         loadAllComments($scope.comments);
 
+        //infinite scroll
         $scope.loadData = function() {
             loadAllComments($scope.comments);
         };
@@ -64,7 +66,8 @@ var app = angular.module('world', ['ngSanitize', 'ui.select','infinite-scroll'])
                 },
                 dataType: 'json',
                 success: function(result){
-                    $.extend($scope.newComment, {
+                    var temp = {'content': $scope.newComment.content};
+                    $.extend(temp, {
                         userName: userName,
                         nationality: $scope.newComment.country.nationality,
                         cityName: $scope.newComment.city.name,
@@ -73,16 +76,17 @@ var app = angular.module('world', ['ngSanitize', 'ui.select','infinite-scroll'])
                         color: result.color,
                         images: result.images
                     });
-                    $scope.comments.splice(0,0,$scope.newComment);
-                    $scope.newComment = {};
-                    $scope.$apply();
+                    $scope.comments.splice(0,0,temp);
+
+                    $scope.$apply(function() {
+                        $scope.newComment.content = '';
+                        removeImageFromPreview();
+                    });
                 },
                 error: function(xhr, status, error) {
                     console.log(xhr.responseText);
                 }
             });
-
-
         }
     });
 
@@ -293,11 +297,8 @@ function testAPI() {
         userId = response.id;
         userName = response.name;
 
-        var ctrlElement = document.querySelector('[ng-controller="SessionController as sessionCtrl"]');
-        var $scope = angular.element(ctrlElement).scope();
-        $scope.$apply(function() {
-            $scope.userId = userId;
-        });
+        setUserId(userId);
+        setCountry(userId);
 
         $('#profilePic').attr('src','https://graph.facebook.com/' + userId + '/picture?type=large');
         $('#userName').text(userName);
@@ -306,4 +307,55 @@ function testAPI() {
             showHideCommandButton(el);
         });
     });
+}
+
+function setUserId(userId) {
+    var ctrlElement = document.querySelector('[ng-controller="SessionController as sessionCtrl"]'),
+        $scope = angular.element(ctrlElement).scope();
+    $scope.$apply(function() {
+        $scope.userId = userId;
+    });
+}
+
+function setCountry(userId) {
+    $.ajax({
+        url: serviceUrl,
+        type: "post",
+        data: {'request':'GetUserDetail', 'userId': userId},
+        dataType: 'json',
+        success: function(result){
+            if (result.countryId !== undefined) {
+                var ctrlElement = document.querySelector('[ng-controller="CommentController as cmtCtrl"]'),
+                    $scope = angular.element(ctrlElement).scope();
+
+                $scope.$apply(function() {
+                    $scope.newComment.country = $scope.countries[result.countryId - 1];
+                });
+
+                setTimeout(function(){
+                    $scope.$apply(function() {
+                        $scope.newComment.city = $scope.cities.filter(function(city) {
+                            if (city.id == result.cityId) {
+                                return city;
+                            }
+                        })[0];
+                    });
+                }, 2000);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.log(xhr.responseText);
+        }
+    });
+}
+
+function removeImageFromPreview() {
+    if (typeof uploaders['photoUpload'] !='undefined') {
+        uploaders['photoUpload'].files.forEach(function(file) {
+            file.keepFile = true;
+        });
+        uploaders['photoUpload'].removeAllFiles(true);
+        $('#photoUpload').hide();
+    }
+
 }

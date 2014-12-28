@@ -12,6 +12,9 @@
     $limit = 1;
 
     switch($request) {
+        case "GetUserDetail":
+            $result = $mysql->getUserDetail($_POST['userId']);
+            break;
         case "GetAllCountries":
             $result = $mysql->getAllCountry();
             break;

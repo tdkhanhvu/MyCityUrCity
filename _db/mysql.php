@@ -117,6 +117,19 @@ class MySQL {
         return $countries;
     }
 
+    public function getUserDetail($userId) {
+        $result = array();
+        $user = $this->selectFromTable('user',[['id', $userId]]);
+        if (sizeof($user) > 0) {
+            $result['cityId'] = $user[0]['cityId'];
+            $city = $this->selectFromTable('city',[['id', $result['cityId']]]);
+
+            if (sizeof($city) > 0)
+                $result['countryId'] = $city[0]['countryId'];
+        }
+        return $result;
+    }
+
     public function getAllCitiesForACountry($countryId) {
         $cities = $this->selectFromTable('city',[['countryId', $countryId]]);
         return $cities;
@@ -138,7 +151,7 @@ class MySQL {
             ]);
         else {
             if ($user[0]['name'] != $userName || $user[0]['cityId'] != $cityId)
-                $this->updateTable('user', [['name', $userName],['city', $cityId]],
+                $this->updateTable('user', [['name', $userName],['cityId', $cityId]],
                     [['id', $userId]]);
         }
 
