@@ -37,8 +37,10 @@
 
             <div class="row comments">
                 <div infinite-scroll="cmtCtrl.loadData()" infinite-scroll-distance="3"
-                     ng-repeat="comment in cmtCtrl.comments | filter: filterCtrl.customFilter">
+                     ng-repeat="comment in cmtCtrl.comments | filter: filterCtrl.customFilter"
+                     class="col-sm-6" style="padding:0;display: inline-block;">
                     <comment></comment>
+                    <div class="clearfix"></div>
                 </div>
             </div>
         </div>

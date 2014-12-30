@@ -1,5 +1,4 @@
 .main {
-    width:80%;
     margin: 0 auto;
 }
 
@@ -21,8 +20,9 @@ p {
 }
 
 .comment {
-    margin: 15px;
-    padding: 10px;
+    /*margin: 15px;*/
+    /*padding: 10px;*/
+    height:260px;
 }
 
 .ng-invalid.ng-dirty {
