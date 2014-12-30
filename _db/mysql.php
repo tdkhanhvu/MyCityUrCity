@@ -10,12 +10,8 @@ class MySQL {
 			$this->dbh = new PDO('mysql:host=localhost;dbname=mycityurcity', 'root', '', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"));
 		}
 		else {
-			$this->dbh = new PDO('mysql:host=localhost;dbname=feedback', 'root', 'admindb', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"));
+			$this->dbh = new PDO('mysql:host=mysql.hostinger.vn;dbname=u930484033_city', 'u930484033_city', 'F%pks58F', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"));
 		}
-
-		$this->items = ['thread', 'comment', 'reply'];
-		$this->votes = ['up', 'down'];
-		$this->user_types = ['fb_id'];
 	}
 
 	/***************************************************
@@ -99,7 +95,8 @@ class MySQL {
         $comments = $this->selectCommentsFromTable($filter, "LIMIT $start, $length");
         foreach ($comments as &$cmt) {
             $cmt['userPic'] = 'https://graph.facebook.com/'.$cmt['userId'].'/picture?type=large';
-            $images = $this->selectFromTable('image', [['commentId', $cmt['id']]]);
+            //$images = $this->selectFromTable('image', [['commentId', $cmt['id']]]);
+            $images = $this->selectFromTable('image', array(array('commentId',$cmt['id'])));
             $cmt['flag'] = './images/flag/'.$cmt['flag'];
             if (sizeof($images) > 0) {
                 $cmt['images'] = array();
@@ -119,10 +116,10 @@ class MySQL {
 
     public function getUserDetail($userId) {
         $result = array();
-        $user = $this->selectFromTable('user',[['id', $userId]]);
+        $user = $this->selectFromTable('user',array(array('id', $userId)));
         if (sizeof($user) > 0) {
             $result['cityId'] = $user[0]['cityId'];
-            $city = $this->selectFromTable('city',[['id', $result['cityId']]]);
+            $city = $this->selectFromTable('city',array(array('id', $result['cityId'])));
 
             if (sizeof($city) > 0)
                 $result['countryId'] = $city[0]['countryId'];
@@ -131,7 +128,7 @@ class MySQL {
     }
 
     public function getAllCitiesForACountry($countryId) {
-        $cities = $this->selectFromTable('city',[['countryId', $countryId]]);
+        $cities = $this->selectFromTable('city',array(array('countryId', $countryId)));
         return $cities;
     }
 
@@ -139,43 +136,43 @@ class MySQL {
     public function insertNewComment($userId, $userName, $cityId, $content, $img) {
         $images = isset($img) ? json_decode($img) : null;
 
-        $user = $this->selectFromTable('user', [['id', $userId]]);
+        $user = $this->selectFromTable('user', array(array('id', $userId)));
 
         //user not exists, create
         if (sizeof($user) == 0)
             $this->insertIntoTable('user',
-            [
-                ['id', $userId],
-                ['name', $userName],
-                ['cityId', $cityId]
-            ]);
+            array(
+                array('id', $userId),
+                array('name', $userName),
+                array('cityId', $cityId)
+            ));
         else {
             if ($user[0]['name'] != $userName || $user[0]['cityId'] != $cityId)
-                $this->updateTable('user', [['name', $userName],['cityId', $cityId]],
-                    [['id', $userId]]);
+                $this->updateTable('user', array(array('name', $userName),
+                    array('cityId', $cityId)),array(array('id', $userId)));
         }
 
         $commentId = $this->insertIntoTable('comment',
-            [
-                ['userId', $userId],
-                ['content', $content]
-            ]);
+            array(
+                array('userId', $userId),
+                array('content', $content)
+            ));
 
         if (isset($images)) {
             foreach ($images as &$img) {
                 $this->insertIntoTable('image',
-                    [
-                        ['commentId', $commentId],
-                        ['url', $img],
-                    ]);
+                    array(
+                        array('commentId', $commentId),
+                        array('url', $img),
+                    ));
                 $img = 'uploaded_file/'.$img;
             }
         }
 
         $result = array();
 
-        $city = $this->selectFromTable('city',[['id', $cityId]]);
-        $country = $this->selectFromTable('country',[['id', $city[0]['countryId']]]);
+        $city = $this->selectFromTable('city',array(array('id', $cityId)));
+        $country = $this->selectFromTable('country',array(array('id', $city[0]['countryId'])));
 
         $result['id'] = $commentId;
         $result['flag'] = './images/flag/'.$country[0]['flag'];

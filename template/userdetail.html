@@ -1,7 +1,10 @@
-<img id="profilePic" class="img-thumbnail" ng-show="sessionCtrl.isLogin()"
-     src=""/>
-<p id="userName" class="text-center" ng-show="sessionCtrl.isLogin()">Nguyễn Quang Phúc</p>
-<p ng-show="!sessionCtrl.isLogin()">Please login to comment</p>
-<fb:login-button scope="public_profile,email" onlogin="checkLoginState();"
-                 ng-show="!sessionCtrl.isLogin()">
-</fb:login-button>
+<div ng-show="sessionCtrl.isLogin()">
+    <img id="profilePic" class="img-thumbnail"
+         src=""/>
+    <p id="userName" class="text-center">Nguyễn Quang Phúc</p>
+</div>
+<div ng-show="!sessionCtrl.isLogin()">
+    <p>Please login to comment</p>
+    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+    </fb:login-button>
+</div>
